@@ -54,16 +54,10 @@ export const OrderBook = (props: OrderBookProps) => {
 
   React.useEffect(() => {
     if (isSocketOpen) {
-      try {
-        setIsLoading(true);
-        //subscribe
-        socket.send(getSubscriptionMessage(market, SubscribeAction.subscribe));
-      } catch (err) {
-      } finally {
-        setIsLoading(false);
-      }
+      setIsLoading(true);
+      socket.send(getSubscriptionMessage(market, SubscribeAction.subscribe));
     }
-  }, [market, isSocketOpen]);
+  }, [isSocketOpen]);
 
   //methods
   const onMessageReceived = (event: MessageEvent<any>) => {
@@ -77,6 +71,10 @@ export const OrderBook = (props: OrderBookProps) => {
           break;
         case MessageType.snapshot:
           setSnapshot(msg as DataMessage);
+          setMarket((msg as DataMessage).product_id);
+          setIsLoading(false);
+          break;
+        case MessageType.delta:
           break;
       }
     }
@@ -89,10 +87,12 @@ export const OrderBook = (props: OrderBookProps) => {
   };
 
   const toggleFeed = () => {
+    setIsLoading(true);
     if (socket && isSocketOpen) {
       socket.send(getSubscriptionMessage(market, SubscribeAction.unsubscribe));
     }
-    setMarket(market === Market.xbt ? Market.eth : Market.xbt);
+    let newMarket = market === Market.xbt ? Market.eth : Market.xbt;
+    socket.send(getSubscriptionMessage(newMarket, SubscribeAction.subscribe));
   };
 
   const reboot = () => {
