@@ -4,6 +4,7 @@ import {
   getMarketGroupingOptions,
   getSubscriptionMessage,
   SubscribeAction,
+  feedUrl,
 } from '@src/services';
 import * as React from 'react';
 import { Alert, Card } from 'react-bootstrap';
@@ -14,9 +15,7 @@ export type OrderBookProps = {
 
 export const OrderBook = (props: OrderBookProps) => {
   //states
-  const [socket, setSocket] = React.useState<WebSocket>(
-    new WebSocket('wss://www.cryptofacilities.com/ws/v1')
-  );
+  const [socket, setSocket] = React.useState<WebSocket>(new WebSocket(feedUrl));
   const [isSocketOpen, setIsSocketOpen] = React.useState<boolean>();
 
   const [market, setMarket] = React.useState<Market>(
