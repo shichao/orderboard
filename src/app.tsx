@@ -1,7 +1,8 @@
 import * as React from 'react';
+import { OrderBook } from './containers';
 
 const App = () => {
-  return <div>Hello world</div>;
+  return <OrderBook />;
 };
 
 export default App;
