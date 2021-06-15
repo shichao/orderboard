@@ -50,8 +50,6 @@ export const OrderBook = (props: OrderBookProps) => {
     if (isSocketOpen) {
       try {
         setIsLoading(true);
-
-        console.log('market');
       } catch (err) {
       } finally {
         setIsLoading(false);
