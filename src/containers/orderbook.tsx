@@ -5,6 +5,7 @@ import {
   getSubscriptionMessage,
   SubscribeAction,
   feedUrl,
+  parseMessage,
 } from '@src/services';
 import * as React from 'react';
 import { Alert, Card } from 'react-bootstrap';
@@ -17,7 +18,6 @@ export const OrderBook = (props: OrderBookProps) => {
   //states
   const [socket, setSocket] = React.useState<WebSocket>(new WebSocket(feedUrl));
   const [isSocketOpen, setIsSocketOpen] = React.useState<boolean>();
-
   const [market, setMarket] = React.useState<Market>(
     props.market ?? Market.xbt
   );
@@ -33,7 +33,7 @@ export const OrderBook = (props: OrderBookProps) => {
     socket.onopen = (event) => {
       setIsSocketOpen(true);
     };
-    socket.onmessage = parseMessage;
+    socket.onmessage = onMessageReceived;
     socket.onclose = (event) => {
       //leave for further diagnostic use
       setIsSocketOpen(false);
@@ -52,18 +52,21 @@ export const OrderBook = (props: OrderBookProps) => {
     if (isSocketOpen) {
       try {
         setIsLoading(true);
+        //subscribe
+        socket.send(getSubscriptionMessage(market, SubscribeAction.subscribe));
       } catch (err) {
       } finally {
         setIsLoading(false);
       }
     }
-    //1. reset default group
-    //2. connect feed
   }, [market, isSocketOpen]);
 
   //methods
-  const parseMessage = (event: MessageEvent<any>) => {
-    console.log(event.data);
+  const onMessageReceived = (event: MessageEvent<any>) => {
+    let msg = parseMessage(event.data);
+    if (msg) {
+      console.log(msg);
+    }
   };
 
   const groupChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,6 +76,9 @@ export const OrderBook = (props: OrderBookProps) => {
   };
 
   const toggleFeed = () => {
+    if (socket && isSocketOpen) {
+      socket.send(getSubscriptionMessage(market, SubscribeAction.unsubscribe));
+    }
     setMarket(market === Market.xbt ? Market.eth : Market.xbt);
   };
 
@@ -155,6 +161,18 @@ export const OrderBook = (props: OrderBookProps) => {
               onClick={() => {
                 socket.send(
                   getSubscriptionMessage(market, SubscribeAction.subscribe)
+                );
+              }}
+            >
+              Add Feed
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger ml-1"
+              disabled={isLoading}
+              onClick={() => {
+                socket.send(
+                  getSubscriptionMessage(market, SubscribeAction.unsubscribe)
                 );
               }}
             >
