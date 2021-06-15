@@ -6,6 +6,8 @@ import {
   SubscribeAction,
   feedUrl,
   parseMessage,
+  MessageType,
+  DataMessage,
 } from '@src/services';
 import * as React from 'react';
 import { Alert, Card } from 'react-bootstrap';
@@ -24,6 +26,8 @@ export const OrderBook = (props: OrderBookProps) => {
   const [group, setGroup] = React.useState<number>(
     getMarketGroupingOptions(market)[0]
   );
+  const [snapshot, setSnapshot] = React.useState<DataMessage>();
+
   const [isLoading, setIsLoading] = React.useState<boolean>();
   const [error, setError] = React.useState<string>();
 
@@ -65,7 +69,16 @@ export const OrderBook = (props: OrderBookProps) => {
   const onMessageReceived = (event: MessageEvent<any>) => {
     let msg = parseMessage(event.data);
     if (msg) {
-      console.log(msg);
+      switch (msg.type) {
+        case MessageType.info:
+        case MessageType.subscribed:
+        case MessageType.unsubscribed:
+          console.log(msg);
+          break;
+        case MessageType.snapshot:
+          setSnapshot(msg as DataMessage);
+          break;
+      }
     }
   };
 
