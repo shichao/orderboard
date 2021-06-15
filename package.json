@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier": "npx prettier \"**/*\" --write --ignore-unknown",
-    "start": "webpack serve  --mode development --inline --hot --open"
+    "start": "npx webpack serve --mode development --inline --hot --open"
   },
   "repository": {
     "type": "git",
@@ -30,7 +30,10 @@
     "react-dom": "^17.0.2",
     "style-loader": "^2.0.0",
     "ts-loader": "^9.2.3",
-    "typescript": "^4.3.2"
+    "typescript": "^4.3.2",
+    "webpack": "^5.39.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2"
   },
   "resolutions": {
     "glob-parent": "5.1.2"
