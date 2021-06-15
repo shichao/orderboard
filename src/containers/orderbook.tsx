@@ -39,6 +39,9 @@ export const OrderBook = (props: OrderBookProps) => {
       //leave for further diagnostic use
       setIsSocketOpen(false);
     };
+    socket.onerror = (event) => {
+      setError(`WebSocket error observed: ${JSON.stringify(event)}`);
+    };
 
     //dispose
     return () => {
