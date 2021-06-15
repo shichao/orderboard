@@ -109,9 +109,9 @@ export const OrderBook = (props: OrderBookProps) => {
       orders.forEach((val, idx) => {
         rows.push(
           <tr key={idx}>
-            <td>{val[1]}</td>
-            <td>{val[1]}</td>
-            <td>{val[0]}</td>
+            <td className="text-right pr-5">{(sum += val[1])}</td>
+            <td className="text-right pr-5">{val[1]}</td>
+            <td className="text-right pr-5">{val[0].toFixed(2)}</td>
           </tr>
         );
       });
@@ -148,12 +148,18 @@ export const OrderBook = (props: OrderBookProps) => {
           <Card.Body className="p-0">
             <Row>
               <Col>
-                <table className="table table-dark text-center">
+                <table className="table table-dark float-end">
                   <thead className="text-secondary">
                     <tr>
-                      <th scope="col">TOTAL</th>
-                      <th scope="col">SIZE</th>
-                      <th scope="col">PRICE</th>
+                      <th scope="col" className="text-right pr-5">
+                        TOTAL
+                      </th>
+                      <th scope="col" className="text-right pr-5">
+                        SIZE
+                      </th>
+                      <th scope="col" className="text-right pr-5">
+                        PRICE
+                      </th>
                     </tr>
                   </thead>
                   <tbody>{generateRows(snapshot?.asks)}</tbody>
