@@ -1,7 +1,7 @@
 import { GroupOptions } from '@src/components';
 import { Market, getMarketGroupingOptions } from '@src/services';
 import * as React from 'react';
-import { Card } from 'react-bootstrap';
+import { Alert, Card } from 'react-bootstrap';
 
 export type OrderBookProps = {
   market?: Market;
@@ -15,10 +15,18 @@ export const OrderBook = (props: OrderBookProps) => {
   const [group, setGroup] = React.useState<number>(
     getMarketGroupingOptions(market)[0]
   );
+  const [isLoading, setIsLoading] = React.useState<boolean>();
+  const [error, setError] = React.useState<string>();
 
   //effects
   React.useEffect(() => {
-    console.log(market);
+    try {
+      setIsLoading(true);
+    } catch (err) {
+    } finally {
+      setIsLoading(false);
+    }
+
     //1. reset default group
     //2. connect feed
   }, [market]);
@@ -33,64 +41,89 @@ export const OrderBook = (props: OrderBookProps) => {
   const toggleFeed = () => {
     setMarket(market === Market.xbt ? Market.eth : Market.xbt);
   };
+
+  const reboot = () => {
+    setError(undefined);
+    //some other logic to reset board
+  };
   //render
   return (
-    <Card
-      bg="dark"
-      text="white"
-      style={{ width: '18rem' }}
-      className="mb-2 w-100"
-    >
-      <Card.Header className="d-flex flex-row justify-content-between">
-        <div className="p-2">Order Book</div>
-        <div className="p-2">
-          <GroupOptions
-            value={group}
-            groups={getMarketGroupingOptions(market)}
-            onChange={groupChanged}
-          />
-        </div>
-      </Card.Header>
-      <Card.Body className="p-0">
-        <table className="table table-dark">
-          <thead className="text-secondary">
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">First</th>
-              <th scope="col">Last</th>
-              <th scope="col">Handle</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Jacob</td>
-              <td>Thornton</td>
-              <td>@fat</td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Larry</td>
-              <td>the Bird</td>
-              <td>@twitter</td>
-            </tr>
-          </tbody>
-        </table>
-      </Card.Body>
-      <Card.Footer className="d-flex justify-content-center mr-1">
-        <button type="button" className="btn btn-info" onClick={toggleFeed}>
-          Toggle Feed
-        </button>
-        <button type="button" className="btn btn-danger ml-1">
-          Kill Feed
-        </button>
-      </Card.Footer>
-    </Card>
+    <>
+      {error !== undefined && (
+        <Alert variant="danger" onClose={reboot} dismissible>
+          <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+          <p>{error}</p>
+        </Alert>
+      )}
+      {error === undefined && (
+        <Card
+          bg="dark"
+          text="white"
+          style={{ width: '18rem' }}
+          className="mb-2 w-100"
+        >
+          <Card.Header className="d-flex flex-row justify-content-between">
+            <div className="p-2">Order Book</div>
+            <div className="p-2">
+              <GroupOptions
+                value={group}
+                groups={getMarketGroupingOptions(market)}
+                onChange={groupChanged}
+                disabled={isLoading}
+              />
+            </div>
+          </Card.Header>
+          <Card.Body className="p-0">
+            <table className="table table-dark">
+              <thead className="text-secondary">
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">First</th>
+                  <th scope="col">Last</th>
+                  <th scope="col">Handle</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Mark</td>
+                  <td>Otto</td>
+                  <td>@mdo</td>
+                </tr>
+                <tr>
+                  <th scope="row">2</th>
+                  <td>Jacob</td>
+                  <td>Thornton</td>
+                  <td>@fat</td>
+                </tr>
+                <tr>
+                  <th scope="row">3</th>
+                  <td>Larry</td>
+                  <td>the Bird</td>
+                  <td>@twitter</td>
+                </tr>
+              </tbody>
+            </table>
+          </Card.Body>
+          <Card.Footer className="d-flex justify-content-center mr-1">
+            <button
+              type="button"
+              className="btn btn-info"
+              onClick={toggleFeed}
+              disabled={isLoading}
+            >
+              Toggle Feed
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger ml-1"
+              disabled={isLoading}
+            >
+              Kill Feed
+            </button>
+          </Card.Footer>
+        </Card>
+      )}
+    </>
   );
 };
