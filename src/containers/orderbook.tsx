@@ -9,6 +9,11 @@ export type OrderBookProps = {
 
 export const OrderBook = (props: OrderBookProps) => {
   //states
+  const [socket, setSocket] = React.useState<WebSocket>(
+    new WebSocket('wss://www.cryptofacilities.com/ws/v1')
+  );
+  const [isSocketOpen, setIsSocketOpen] = React.useState<boolean>();
+
   const [market, setMarket] = React.useState<Market>(
     props.market ?? Market.xbt
   );
@@ -20,8 +25,28 @@ export const OrderBook = (props: OrderBookProps) => {
 
   //effects
   React.useEffect(() => {
+    //init
+    socket.onopen = (event) => {
+      setIsSocketOpen(true);
+    };
+    socket.onmessage = (event) => {
+      console.log(event.data);
+    };
+    socket.onclose = (event) => {
+      //leave for further diagnostic use
+      setIsSocketOpen(false);
+    };
+
+    //dispose
+    return () => {
+      console.log('dispose');
+    };
+  }, [socket]);
+
+  React.useEffect(() => {
     try {
       setIsLoading(true);
+      //
     } catch (err) {
     } finally {
       setIsLoading(false);
@@ -32,6 +57,10 @@ export const OrderBook = (props: OrderBookProps) => {
   }, [market]);
 
   //methods
+  const parseMessage = (event: MessageEvent<any>) => {
+    console.log(event.data);
+  };
+
   const groupChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
       setGroup(+e.target.value);
@@ -118,6 +147,15 @@ export const OrderBook = (props: OrderBookProps) => {
               type="button"
               className="btn btn-danger ml-1"
               disabled={isLoading}
+              onClick={() => {
+                socket.send(
+                  JSON.stringify({
+                    event: 'subscribe',
+                    feed: 'book_ui_1',
+                    product_ids: ['PI_XBTUSD'],
+                  })
+                );
+              }}
             >
               Kill Feed
             </button>
