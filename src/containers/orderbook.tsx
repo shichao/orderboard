@@ -8,9 +8,10 @@ import {
   parseMessage,
   MessageType,
   DataMessage,
+  Order,
 } from '@src/services';
 import * as React from 'react';
-import { Alert, Card } from 'react-bootstrap';
+import { Alert, Card, Col, Row } from 'react-bootstrap';
 
 export type OrderBookProps = {
   market?: Market;
@@ -99,7 +100,25 @@ export const OrderBook = (props: OrderBookProps) => {
     setError(undefined);
     //some other logic to reset board
   };
+
   //render
+  const generateRows = (orders: number[][]) => {
+    let sum = 0;
+    let rows = [];
+    if (orders?.length > 0) {
+      orders.forEach((val, idx) => {
+        rows.push(
+          <tr key={idx}>
+            <td>{val[1]}</td>
+            <td>{val[1]}</td>
+            <td>{val[0]}</td>
+          </tr>
+        );
+      });
+    }
+    return rows;
+  };
+
   return (
     <>
       {error !== undefined && (
@@ -127,36 +146,21 @@ export const OrderBook = (props: OrderBookProps) => {
             </div>
           </Card.Header>
           <Card.Body className="p-0">
-            <table className="table table-dark">
-              <thead className="text-secondary">
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">First</th>
-                  <th scope="col">Last</th>
-                  <th scope="col">Handle</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                </tr>
-                <tr>
-                  <th scope="row">3</th>
-                  <td>Larry</td>
-                  <td>the Bird</td>
-                  <td>@twitter</td>
-                </tr>
-              </tbody>
-            </table>
+            <Row>
+              <Col>
+                <table className="table table-dark text-center">
+                  <thead className="text-secondary">
+                    <tr>
+                      <th scope="col">TOTAL</th>
+                      <th scope="col">SIZE</th>
+                      <th scope="col">PRICE</th>
+                    </tr>
+                  </thead>
+                  <tbody>{generateRows(snapshot?.asks)}</tbody>
+                </table>
+              </Col>
+              <Col>2 of 2</Col>
+            </Row>
           </Card.Body>
           <Card.Footer className="d-flex justify-content-center mr-1">
             <button
