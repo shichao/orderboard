@@ -1,7 +1,31 @@
+import { GroupOptions } from '@src/components';
+import { Market, getMarketGroupingOptions } from '@src/services';
 import * as React from 'react';
-import { Card, Nav, Navbar } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 
-export const OrderBook = () => {
+export type OrderBookProps = {
+  market?: Market;
+};
+
+export const OrderBook = (props: OrderBookProps) => {
+  //states
+  const [market, setMarket] = React.useState<Market>(
+    props.market ?? Market.xbt
+  );
+  const [group, setGroup] = React.useState<number>(
+    getMarketGroupingOptions(market)[0]
+  );
+
+  //effects
+  React.useEffect(() => {}, [market]);
+
+  //methods
+  const groupChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value) {
+      setGroup(+e.target.value);
+    }
+  };
+  //render
   return (
     <Card
       bg="dark"
@@ -11,7 +35,13 @@ export const OrderBook = () => {
     >
       <Card.Header className="d-flex flex-row justify-content-between">
         <div className="p-2">Order Book</div>
-        <div className="p-2">Dropdownlist</div>
+        <div className="p-2">
+          <GroupOptions
+            value={group}
+            groups={getMarketGroupingOptions(market)}
+            onChange={groupChanged}
+          />
+        </div>
       </Card.Header>
       <Card.Body className="p-0">
         <table className="table table-dark">
