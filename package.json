@@ -38,7 +38,17 @@
     "webpack-cli": "^4.7.2",
     "webpack-dev-server": "^3.11.2"
   },
-  "resolutions": {
-    "glob-parent": "5.1.2"
+  "jest": {
+    "preset": "ts-jest",
+    "testRegex": "(\\.(test|spec))\\.(ts|tsx|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "moduleNameMapper": {
+      "\\.(scss|css)$": "identity-obj-proxy",
+      "^@src/(.*)$": "<rootDir>/src/$1"
+    }
   }
 }

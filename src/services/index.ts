@@ -20,6 +20,6 @@ export const getSubscriptionMessage = (
   return JSON.stringify({
     event: action,
     feed: 'book_ui_1',
-    product_ids: [entity.Market],
+    product_ids: [market],
   });
 };
