@@ -17,13 +17,21 @@ export const OrderBook = (props: OrderBookProps) => {
   );
 
   //effects
-  React.useEffect(() => {}, [market]);
+  React.useEffect(() => {
+    console.log(market);
+    //1. reset default group
+    //2. connect feed
+  }, [market]);
 
   //methods
   const groupChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
       setGroup(+e.target.value);
     }
+  };
+
+  const toggleFeed = () => {
+    setMarket(market === Market.xbt ? Market.eth : Market.xbt);
   };
   //render
   return (
@@ -76,7 +84,7 @@ export const OrderBook = (props: OrderBookProps) => {
         </table>
       </Card.Body>
       <Card.Footer className="d-flex justify-content-center mr-1">
-        <button type="button" className="btn btn-info">
+        <button type="button" className="btn btn-info" onClick={toggleFeed}>
           Toggle Feed
         </button>
         <button type="button" className="btn btn-danger ml-1">
