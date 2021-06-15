@@ -1,5 +1,10 @@
 import { GroupOptions } from '@src/components';
-import { Market, getMarketGroupingOptions } from '@src/services';
+import {
+  Market,
+  getMarketGroupingOptions,
+  getSubscriptionMessage,
+  SubscribeAction,
+} from '@src/services';
 import * as React from 'react';
 import { Alert, Card } from 'react-bootstrap';
 
@@ -29,9 +34,7 @@ export const OrderBook = (props: OrderBookProps) => {
     socket.onopen = (event) => {
       setIsSocketOpen(true);
     };
-    socket.onmessage = (event) => {
-      console.log(event.data);
-    };
+    socket.onmessage = parseMessage;
     socket.onclose = (event) => {
       //leave for further diagnostic use
       setIsSocketOpen(false);
@@ -44,17 +47,19 @@ export const OrderBook = (props: OrderBookProps) => {
   }, [socket]);
 
   React.useEffect(() => {
-    try {
-      setIsLoading(true);
-      //
-    } catch (err) {
-    } finally {
-      setIsLoading(false);
-    }
+    if (isSocketOpen) {
+      try {
+        setIsLoading(true);
 
+        console.log('market');
+      } catch (err) {
+      } finally {
+        setIsLoading(false);
+      }
+    }
     //1. reset default group
     //2. connect feed
-  }, [market]);
+  }, [market, isSocketOpen]);
 
   //methods
   const parseMessage = (event: MessageEvent<any>) => {
@@ -149,11 +154,7 @@ export const OrderBook = (props: OrderBookProps) => {
               disabled={isLoading}
               onClick={() => {
                 socket.send(
-                  JSON.stringify({
-                    event: 'subscribe',
-                    feed: 'book_ui_1',
-                    product_ids: ['PI_XBTUSD'],
-                  })
+                  getSubscriptionMessage(market, SubscribeAction.subscribe)
                 );
               }}
             >

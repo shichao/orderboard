@@ -11,3 +11,8 @@ export enum Market {
   xbt = 'PI_XBTUSD',
   eth = 'PI_ETHUSD',
 }
+
+export enum SubscribeAction {
+  subscribe = 'subscribe',
+  unsubscribe = 'unsubscribe',
+}

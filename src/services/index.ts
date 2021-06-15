@@ -12,3 +12,14 @@ export const getMarketGroupingOptions = (market: entity.Market): number[] => {
       throw 'unknown market';
   }
 };
+
+export const getSubscriptionMessage = (
+  market: entity.Market,
+  action: entity.SubscribeAction
+): string => {
+  return JSON.stringify({
+    event: action,
+    feed: 'book_ui_1',
+    product_ids: [entity.Market],
+  });
+};
