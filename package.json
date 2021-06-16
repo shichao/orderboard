@@ -4,7 +4,7 @@
   "description": "a simple orderboard implementation",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "prettier": "npx prettier \"**/*\" --write --ignore-unknown",
     "start": "npx webpack serve --mode development --inline --hot --open"
   },

@@ -116,13 +116,13 @@ describe('Entity tests', () => {
     let snapshot_msg = parseMessage(snapshot_str);
     expect(snapshot_msg.type).toBe(MessageType.snapshot);
     expect((snapshot_msg as DataMessage).product_id).toEqual(Market.eth);
-    expect((snapshot_msg as DataMessage).asks.length).toBe(25);
-    expect((snapshot_msg as DataMessage).bids.length).toBe(25);
+    expect(Object.keys((snapshot_msg as DataMessage).asks).length).toBe(25);
+    expect(Object.keys((snapshot_msg as DataMessage).bids).length).toBe(25);
 
     let delta_msg = parseMessage(delta_str);
     expect(delta_msg.type).toBe(MessageType.delta);
     expect((delta_msg as DataMessage).product_id).toEqual(Market.eth);
-    expect((delta_msg as DataMessage).asks.length).toBe(2);
-    expect((delta_msg as DataMessage).bids.length).toBe(0);
+    expect(Object.keys((delta_msg as DataMessage).asks).length).toBe(2);
+    expect((delta_msg as DataMessage).bids).toBeUndefined();
   });
 });

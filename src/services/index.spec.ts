@@ -5,15 +5,20 @@ describe('Message parser tests', () => {
     let orders = [
       [1, 1],
       [2, 2],
+      [0.5, 10],
       [3, 3],
       [4, 4],
       [6, 6],
-      [5, 5],
+      [5, 15],
     ];
     let orderList = parseOrderSet(orders);
 
     expect(orderList).not.toBeNull();
-    let expectedKeys = [1, 2, 3, 4, 5, 6];
-    expect(Object.keys(orderList).map((i) => +i)).toEqual(expectedKeys);
+    let expectedKeys = [0.5, 1, 2, 3, 4, 5, 6];
+    expect(
+      Object.keys(orderList)
+        .sort()
+        .map((i) => +i)
+    ).toEqual(expectedKeys);
   });
 });

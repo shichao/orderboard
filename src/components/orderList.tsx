@@ -1,3 +1,4 @@
+import { Order, OrderSet } from '@src/services';
 import * as React from 'react';
 
 export enum AlignmentType {
@@ -6,7 +7,7 @@ export enum AlignmentType {
 }
 
 export type OrderListProps = {
-  orders: number[][];
+  orders: OrderSet;
   alignment: AlignmentType;
   group: number;
 };
@@ -20,32 +21,33 @@ const endecimal = (value: number) => {
   return +(value / 100).toFixed(2);
 };
 
-export const groupOrders = (orders: number[][], group: number): number[][] => {
-  if (orders?.length > 1) {
-    let result = [];
-    let seed = [0, 0];
+export const groupOrders = (orderSet: OrderSet, group: number): Order[] => {
+  let result = [];
+  let seed = [0, 0];
+  let orders = Object.values(orderSet);
 
-    orders.forEach((order, idx) => {
+  orders
+    .sort((a, b) => b.price - a.price)
+    .forEach((order, idx) => {
       //test if current order's price is multiple of group;
-      let price_int = dedecimal(order[0]);
+      let price_int = dedecimal(order.price);
       let remainder = price_int % dedecimal(group);
       let groupLevel = endecimal(price_int - remainder);
 
       if (groupLevel < seed[0]) {
-        if (seed[0] > 0 && seed[1] > 0) result.push(seed);
-        seed = [groupLevel, order[1]];
+        if (seed[0] > 0 && seed[1] > 0) {
+          result.push(new Order(seed[0], seed[1]));
+        }
+        seed = [groupLevel, order.size];
       } else {
         seed[0] = groupLevel;
-        seed[1] += order[1];
+        seed[1] += order.size;
       }
     });
-    if (seed[0] > 0 && seed[1] > 0) {
-      result.push(seed);
-      seed = [0, 0];
-    }
-    return result;
+  if (seed[0] > 0 && seed[1] > 0) {
+    result.push(new Order(seed[0], seed[1]));
   }
-  return orders;
+  return result;
 };
 
 export const OrderList = (props: OrderListProps) => {
@@ -84,21 +86,21 @@ export const OrderList = (props: OrderListProps) => {
   const getBody = () => {
     let sum = 0;
     let rows = [];
-    if (props.orders?.length > 0) {
+    if (props.orders) {
       return (
         <tbody>
-          {groupOrders(props.orders, props.group).map((val, idx) =>
+          {groupOrders(props.orders, props.group).map((order, idx) =>
             props.alignment === AlignmentType.leftToRight ? (
               <tr key={idx}>
-                <td className="text-right pr-5">{(sum += val[1])}</td>
-                <td className="text-right pr-5">{val[1]}</td>
-                <td className="text-right pr-5">{val[0].toFixed(2)}</td>
+                <td className="text-right pr-5">{(sum += order.size)}</td>
+                <td className="text-right pr-5">{order.size}</td>
+                <td className="text-right pr-5">{order.price.toFixed(2)}</td>
               </tr>
             ) : (
               <tr key={idx}>
-                <td className="text-left pl-5">{val[0].toFixed(2)}</td>
-                <td className="text-left pl-5">{val[1]}</td>
-                <td className="text-left pl-5">{(sum += val[1])}</td>
+                <td className="text-left pl-5">{order.price.toFixed(2)}</td>
+                <td className="text-left pl-5">{order.size}</td>
+                <td className="text-left pl-5">{(sum += order.size)}</td>
               </tr>
             )
           )}
@@ -110,7 +112,7 @@ export const OrderList = (props: OrderListProps) => {
 
   return (
     <>
-      {props.orders?.length > 0 && (
+      {props.orders && (
         <table className="table table-dark float-end">
           {getHeader()}
           {getBody()}

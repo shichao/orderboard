@@ -19,9 +19,20 @@ export enum MessageType {
 export interface IMessage {
   type: MessageType;
 }
+
+export class Order {
+  price: number;
+  size: number;
+
+  constructor(price: number, size: number) {
+    this.price = price;
+    this.size = size;
+  }
+}
+
 //key is price, value is size
 export type OrderSet = {
-  [key: number]: number;
+  [key: number]: Order;
 };
 
 //{"event":"info","version":1}

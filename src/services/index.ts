@@ -53,11 +53,9 @@ export const parseOrderSet = (orders: number[][]): entity.OrderSet => {
   let result: entity.OrderSet;
   if (orders?.length > 0) {
     result = {};
-    orders
-      .sort((a, b) => b[0] - a[0])
-      .forEach((order, idx) => {
-        result[order[0]] = order[1];
-      });
+    orders.forEach((order, idx) => {
+      result[order[0]] = { price: order[0], size: order[1] };
+    });
   }
   return result;
 };
