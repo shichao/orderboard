@@ -1,4 +1,4 @@
-import { GroupOptions } from '@src/components';
+import { AlignmentType, GroupOptions, OrderList } from '@src/components';
 import {
   Market,
   getMarketGroupingOptions,
@@ -102,23 +102,6 @@ export const OrderBook = (props: OrderBookProps) => {
   };
 
   //render
-  const generateRows = (orders: number[][]) => {
-    let sum = 0;
-    let rows = [];
-    if (orders?.length > 0) {
-      orders.forEach((val, idx) => {
-        rows.push(
-          <tr key={idx}>
-            <td className="text-right pr-5">{(sum += val[1])}</td>
-            <td className="text-right pr-5">{val[1]}</td>
-            <td className="text-right pr-5">{val[0].toFixed(2)}</td>
-          </tr>
-        );
-      });
-    }
-    return rows;
-  };
-
   return (
     <>
       {error !== undefined && (
@@ -147,25 +130,20 @@ export const OrderBook = (props: OrderBookProps) => {
           </Card.Header>
           <Card.Body className="p-0">
             <Row>
-              <Col>
-                <table className="table table-dark float-end">
-                  <thead className="text-secondary">
-                    <tr>
-                      <th scope="col" className="text-right pr-5">
-                        TOTAL
-                      </th>
-                      <th scope="col" className="text-right pr-5">
-                        SIZE
-                      </th>
-                      <th scope="col" className="text-right pr-5">
-                        PRICE
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>{generateRows(snapshot?.asks)}</tbody>
-                </table>
+              <Col className="p-0">
+                <OrderList
+                  alignment={AlignmentType.leftToRight}
+                  orders={snapshot?.asks}
+                  groupBy={group}
+                />
               </Col>
-              <Col>2 of 2</Col>
+              <Col className="p-0">
+                <OrderList
+                  alignment={AlignmentType.rightToLeft}
+                  orders={snapshot?.bids}
+                  groupBy={group}
+                />
+              </Col>
             </Row>
           </Card.Body>
           <Card.Footer className="d-flex justify-content-center mr-1">

@@ -43,8 +43,8 @@ export const parseMessage = (message: string): entity.IMessage => {
     return new entity.DataMessage(
       entity.MessageType.snapshot,
       result['product_id'],
-      (result['bids'] as number[][]).sort((a, b) => a[0] - b[0]),
-      (result['asks'] as number[][]).sort((a, b) => a[0] - b[0])
+      (result['bids'] as number[][]).sort((a, b) => b[0] - a[0]),
+      (result['asks'] as number[][]).sort((a, b) => b[0] - a[0])
     );
   }
 };
