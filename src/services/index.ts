@@ -35,16 +35,29 @@ export const parseMessage = (message: string): entity.IMessage => {
     return new entity.DataMessage(
       entity.MessageType.delta,
       result['product_id'],
-      result['bids'],
-      (result['asks'] as number[][]).sort((a, b) => b[0] - a[0])
+      parseOrderSet(result['bids']),
+      parseOrderSet(result['asks'])
     );
   } else if (result['feed'] === feedSnapshotName) {
     //snapshot
     return new entity.DataMessage(
       entity.MessageType.snapshot,
       result['product_id'],
-      result['bids'],
-      (result['asks'] as number[][]).sort((a, b) => b[0] - a[0])
+      parseOrderSet(result['bids']),
+      parseOrderSet(result['asks'])
     );
   }
+};
+
+export const parseOrderSet = (orders: number[][]): entity.OrderSet => {
+  let result: entity.OrderSet;
+  if (orders?.length > 0) {
+    result = {};
+    orders
+      .sort((a, b) => b[0] - a[0])
+      .forEach((order, idx) => {
+        result[order[0]] = order[1];
+      });
+  }
+  return result;
 };

@@ -8,7 +8,6 @@ import {
   parseMessage,
   MessageType,
   DataMessage,
-  Order,
 } from '@src/services';
 import * as React from 'react';
 import { Alert, Card, Col, Row } from 'react-bootstrap';

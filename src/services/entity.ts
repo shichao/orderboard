@@ -19,15 +19,10 @@ export enum MessageType {
 export interface IMessage {
   type: MessageType;
 }
-
-export class Order extends Array<number> {
-  public get price() {
-    return this[0];
-  }
-  public get size() {
-    return this[1];
-  }
-}
+//key is price, value is size
+export type OrderSet = {
+  [key: number]: number;
+};
 
 //{"event":"info","version":1}
 //{"event":"subscribed","feed":"book_ui_1","product_ids":["PI_ETHUSD"]}
@@ -46,13 +41,13 @@ export class EventMessage implements IMessage {
 export class DataMessage implements IMessage {
   type: MessageType;
   product_id: Market;
-  bids: number[][];
-  asks: number[][];
+  bids: OrderSet;
+  asks: OrderSet;
   constructor(
     type: MessageType,
     product_id: Market,
-    bids: number[][],
-    asks: number[][]
+    bids: OrderSet,
+    asks: OrderSet
   ) {
     this.type = type;
     this.product_id = product_id;
