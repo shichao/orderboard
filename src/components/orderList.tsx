@@ -11,20 +11,38 @@ export type OrderListProps = {
   group: number;
 };
 
+//we have two decimal maximumly
+const dedecimal = (value: number) => {
+  return +(value * 100).toFixed(0);
+};
+
+const endecimal = (value: number) => {
+  return +(value / 100).toFixed(2);
+};
+
 export const groupOrders = (orders: number[][], group: number): number[][] => {
   if (orders?.length > 1) {
     let result = [];
     let seed = [0, 0];
+
     orders.forEach((order, idx) => {
       //test if current order's price is multiple of group;
-      if (order[0] / group === 0) {
-        result.push([seed[0] + order[0], seed[1] + order[1]]);
-        seed = [0, 0];
+      let price_int = dedecimal(order[0]);
+      let remainder = price_int % dedecimal(group);
+      let groupLevel = endecimal(price_int - remainder);
+
+      if (groupLevel < seed[0]) {
+        if (seed[0] > 0 && seed[1] > 0) result.push(seed);
+        seed = [groupLevel, order[1]];
       } else {
-        seed[0] += order[0];
+        seed[0] = groupLevel;
         seed[1] += order[1];
       }
     });
+    if (seed[0] > 0 && seed[1] > 0) {
+      result.push(seed);
+      seed = [0, 0];
+    }
     return result;
   }
   return orders;

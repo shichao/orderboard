@@ -74,7 +74,6 @@ export const OrderBook = (props: OrderBookProps) => {
           let snapshot = msg as DataMessage;
           setSnapshot(snapshot);
           setMarket(snapshot.product_id);
-          //console.log(getMarketGroupingOptions(snapshot.product_id)[0]);
           setGroup(getMarketGroupingOptions(snapshot.product_id)[0]);
           setIsLoading(false);
           break;

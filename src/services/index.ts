@@ -36,14 +36,14 @@ export const parseMessage = (message: string): entity.IMessage => {
       entity.MessageType.delta,
       result['product_id'],
       result['bids'],
-      result['asks']
+      (result['asks'] as number[][]).sort((a, b) => b[0] - a[0])
     );
   } else if (result['feed'] === feedSnapshotName) {
     //snapshot
     return new entity.DataMessage(
       entity.MessageType.snapshot,
       result['product_id'],
-      (result['bids'] as number[][]).sort((a, b) => b[0] - a[0]),
+      result['bids'],
       (result['asks'] as number[][]).sort((a, b) => b[0] - a[0])
     );
   }
