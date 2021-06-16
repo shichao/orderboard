@@ -73,6 +73,8 @@ export const OrderBook = (props: OrderBookProps) => {
           setIsLoading(false);
           break;
         case MessageType.delta:
+          let delta = msg as DataMessage;
+          dispatch({ type: OrderStateActionType.update, payload: delta });
           break;
       }
     }
