@@ -11,23 +11,19 @@ import {
 } from '@src/services';
 import * as React from 'react';
 import { Alert, Card, Col, Row } from 'react-bootstrap';
+import { OrderStateActionType, reducer } from './orderState';
 
 export type OrderBookProps = {
   market?: Market;
 };
 
 export const OrderBook = (props: OrderBookProps) => {
+  const [state, dispatch] = React.useReducer(reducer, {
+    market: props.market ?? Market.xbt,
+  });
   //states
   const [socket, setSocket] = React.useState<WebSocket>(new WebSocket(feedUrl));
   const [isSocketOpen, setIsSocketOpen] = React.useState<boolean>();
-  const [market, setMarket] = React.useState<Market>(
-    props.market ?? Market.xbt
-  );
-  const [group, setGroup] = React.useState<number>(
-    getMarketGroupingOptions(market)[0]
-  );
-  const [snapshot, setSnapshot] = React.useState<DataMessage>();
-
   const [isLoading, setIsLoading] = React.useState<boolean>();
   const [error, setError] = React.useState<string>();
 
@@ -55,7 +51,9 @@ export const OrderBook = (props: OrderBookProps) => {
   React.useEffect(() => {
     if (isSocketOpen) {
       setIsLoading(true);
-      socket.send(getSubscriptionMessage(market, SubscribeAction.subscribe));
+      socket.send(
+        getSubscriptionMessage(state.market, SubscribeAction.subscribe)
+      );
     }
   }, [isSocketOpen]);
 
@@ -71,9 +69,7 @@ export const OrderBook = (props: OrderBookProps) => {
           break;
         case MessageType.snapshot:
           let snapshot = msg as DataMessage;
-          setSnapshot(snapshot);
-          setMarket(snapshot.product_id);
-          setGroup(getMarketGroupingOptions(snapshot.product_id)[0]);
+          dispatch({ type: OrderStateActionType.init, payload: snapshot });
           setIsLoading(false);
           break;
         case MessageType.delta:
@@ -84,16 +80,18 @@ export const OrderBook = (props: OrderBookProps) => {
 
   const groupChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
-      setGroup(+e.target.value);
+      dispatch({ type: OrderStateActionType.group, payload: +e.target.value });
     }
   };
 
   const toggleFeed = () => {
     setIsLoading(true);
     if (socket && isSocketOpen) {
-      socket.send(getSubscriptionMessage(market, SubscribeAction.unsubscribe));
+      socket.send(
+        getSubscriptionMessage(state.market, SubscribeAction.unsubscribe)
+      );
     }
-    let newMarket = market === Market.xbt ? Market.eth : Market.xbt;
+    let newMarket = state.market === Market.xbt ? Market.eth : Market.xbt;
     socket.send(getSubscriptionMessage(newMarket, SubscribeAction.subscribe));
   };
 
@@ -122,8 +120,8 @@ export const OrderBook = (props: OrderBookProps) => {
             <div className="p-2">Order Book</div>
             <div className="p-2">
               <GroupOptions
-                value={group}
-                groups={getMarketGroupingOptions(market)}
+                value={state.group}
+                groups={getMarketGroupingOptions(state.market)}
                 onChange={groupChanged}
                 disabled={isLoading}
               />
@@ -134,15 +132,15 @@ export const OrderBook = (props: OrderBookProps) => {
               <Col className="p-0">
                 <OrderList
                   alignment={AlignmentType.leftToRight}
-                  orders={snapshot?.asks}
-                  group={group}
+                  orders={state.asks}
+                  group={state.group}
                 />
               </Col>
               <Col className="p-0">
                 <OrderList
                   alignment={AlignmentType.rightToLeft}
-                  orders={snapshot?.bids}
-                  group={group}
+                  orders={state.bids}
+                  group={state.group}
                 />
               </Col>
             </Row>
@@ -162,7 +160,10 @@ export const OrderBook = (props: OrderBookProps) => {
               disabled={isLoading}
               onClick={() => {
                 socket.send(
-                  getSubscriptionMessage(market, SubscribeAction.subscribe)
+                  getSubscriptionMessage(
+                    state.market,
+                    SubscribeAction.subscribe
+                  )
                 );
               }}
             >
@@ -174,7 +175,10 @@ export const OrderBook = (props: OrderBookProps) => {
               disabled={isLoading}
               onClick={() => {
                 socket.send(
-                  getSubscriptionMessage(market, SubscribeAction.unsubscribe)
+                  getSubscriptionMessage(
+                    state.market,
+                    SubscribeAction.unsubscribe
+                  )
                 );
               }}
             >

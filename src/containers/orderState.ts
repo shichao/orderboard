@@ -8,10 +8,10 @@ import {
 import { Reducer, ReducerAction } from 'react';
 
 export type OrderState = {
-  market: Market;
-  group: number;
-  bids: OrderSet;
-  asks: OrderSet;
+  market?: Market;
+  group?: number;
+  bids?: OrderSet;
+  asks?: OrderSet;
 };
 
 export enum OrderStateActionType {
@@ -30,7 +30,7 @@ export type OrderStateAction =
       payload: number;
     };
 
-export const OrderStateReducer: Reducer<OrderState, OrderStateAction> = (
+export const reducer: Reducer<OrderState, OrderStateAction> = (
   state: OrderState,
   action: OrderStateAction
 ) => {
