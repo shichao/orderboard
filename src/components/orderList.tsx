@@ -8,7 +8,26 @@ export enum AlignmentType {
 export type OrderListProps = {
   orders: number[][];
   alignment: AlignmentType;
-  groupBy: number;
+  group: number;
+};
+
+export const groupOrders = (orders: number[][], group: number): number[][] => {
+  if (orders?.length > 1) {
+    let result = [];
+    let seed = [0, 0];
+    orders.forEach((order, idx) => {
+      //test if current order's price is multiple of group;
+      if (order[0] / group === 0) {
+        result.push([seed[0] + order[0], seed[1] + order[1]]);
+        seed = [0, 0];
+      } else {
+        seed[0] += order[0];
+        seed[1] += order[1];
+      }
+    });
+    return result;
+  }
+  return orders;
 };
 
 export const OrderList = (props: OrderListProps) => {
