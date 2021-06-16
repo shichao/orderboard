@@ -87,7 +87,7 @@ export const OrderList = (props: OrderListProps) => {
     if (props.orders?.length > 0) {
       return (
         <tbody>
-          {props.orders.map((val, idx) =>
+          {groupOrders(props.orders, props.group).map((val, idx) =>
             props.alignment === AlignmentType.leftToRight ? (
               <tr key={idx}>
                 <td className="text-right pr-5">{(sum += val[1])}</td>
