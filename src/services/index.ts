@@ -59,3 +59,21 @@ export const parseOrderSet = (orders: number[][]): entity.OrderSet => {
   }
   return result;
 };
+
+export const updateOrderSet = (
+  source: entity.OrderSet,
+  delta: entity.OrderSet
+) => {
+  let result = source;
+  if (delta) {
+    result = { ...source };
+    Object.values(delta).forEach((order, idx) => {
+      if (order.size === 0) {
+        delete result[order.price];
+      } else {
+        result[order.price] = order;
+      }
+    });
+  }
+  return result;
+};
