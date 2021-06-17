@@ -22,7 +22,7 @@ export const OrderBook = (props: OrderBookProps) => {
     market: props.market ?? Market.xbt,
   });
   //states
-  const [socket, setSocket] = React.useState<WebSocket>(new WebSocket(feedUrl));
+  const [socket, setSocket] = React.useState<WebSocket>();
   const [isSocketOpen, setIsSocketOpen] = React.useState<boolean>();
   const [isLoading, setIsLoading] = React.useState<boolean>();
   const [error, setError] = React.useState<string>();
@@ -30,6 +30,8 @@ export const OrderBook = (props: OrderBookProps) => {
   //effects
   React.useEffect(() => {
     //init
+    let socket = new WebSocket(feedUrl);
+
     socket.onopen = (event) => {
       setIsSocketOpen(true);
     };
@@ -39,14 +41,16 @@ export const OrderBook = (props: OrderBookProps) => {
       setIsSocketOpen(false);
     };
     socket.onerror = (event) => {
-      setError(`WebSocket error observed: ${JSON.stringify(event)}`);
+      console.log(event);
     };
+
+    setSocket(socket);
 
     //dispose
     return () => {
       console.log('dispose');
     };
-  }, [socket]);
+  }, []);
 
   React.useEffect(() => {
     if (isSocketOpen) {
@@ -74,6 +78,7 @@ export const OrderBook = (props: OrderBookProps) => {
           break;
         case MessageType.delta:
           let delta = msg as DataMessage;
+          //console.log(delta);
           dispatch({ type: OrderStateActionType.update, payload: delta });
           break;
       }
