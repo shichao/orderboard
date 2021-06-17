@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "prettier": "npx prettier \"**/*\" --write --ignore-unknown",
-    "start": "npx webpack serve --mode development --inline --hot --open"
+    "start": "npx webpack serve --mode development --inline --hot --open",
+    "webpack": "webpack"
   },
   "repository": {
     "type": "git",
