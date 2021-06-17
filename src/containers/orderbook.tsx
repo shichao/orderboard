@@ -73,7 +73,6 @@ export const OrderBook = (props: OrderBookProps) => {
           break;
         case MessageType.warning:
         case MessageType.alert:
-          setError('something wrong');
           console.log(msg);
           break;
         case MessageType.snapshot:

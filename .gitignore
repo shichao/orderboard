@@ -10,7 +10,7 @@
 /build
 
 #webpack_package
-/dist
+
 
 # misc
 .DS_Store
