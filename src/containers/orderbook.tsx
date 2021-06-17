@@ -73,8 +73,8 @@ export const OrderBook = (props: OrderBookProps) => {
           setIsLoading(false);
           break;
         case MessageType.delta:
-          //let delta = msg as DataMessage;
-          //dispatch({ type: OrderStateActionType.update, payload: delta });
+          let delta = msg as DataMessage;
+          dispatch({ type: OrderStateActionType.update, payload: delta });
           break;
       }
     }
@@ -133,7 +133,7 @@ export const OrderBook = (props: OrderBookProps) => {
             <Row>
               <Col className="p-0">
                 <OrderList
-                  alignment={AlignmentType.leftToRight}
+                  alignment={AlignmentType.rightToLeft}
                   orders={state.asks}
                   group={state.group}
                   color={Color.Red}
@@ -141,7 +141,7 @@ export const OrderBook = (props: OrderBookProps) => {
               </Col>
               <Col className="p-0">
                 <OrderList
-                  alignment={AlignmentType.rightToLeft}
+                  alignment={AlignmentType.leftToRight}
                   orders={state.bids}
                   group={state.group}
                   color={Color.Green}

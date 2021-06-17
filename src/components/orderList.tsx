@@ -113,17 +113,16 @@ export const OrderList = (props: OrderListProps) => {
       return (
         <tbody>
           {orders.map((order, idx, arr) =>
-            props.alignment === AlignmentType.leftToRight ? (
+            props.alignment === AlignmentType.rightToLeft ? (
               <tr
                 key={idx}
                 className={
                   props.color === Color.Red ? 'redBarToLeft' : 'greenBarToLeft'
                 }
                 style={{
-                  backgroundSize: getToRightBgSize(
-                    sum + order.size,
-                    total.size
-                  ),
+                  backgroundSize: getToLeftBgSize(sum + order.size, total.size),
+                  backgroundColor:
+                    props.color === Color.Red ? '#800000' : '#006600',
                 }}
               >
                 <td className="text-right pr-5">{(sum += order.size)}</td>
