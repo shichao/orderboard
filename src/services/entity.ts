@@ -12,6 +12,8 @@ export enum MessageType {
   info = 'info',
   subscribed = 'subscribed',
   unsubscribed = 'unsubscribed',
+  warning = 'warning',
+  alert = 'alert',
   snapshot = 'snapshot',
   delta = 'delta',
 }

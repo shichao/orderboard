@@ -71,6 +71,10 @@ export const OrderBook = (props: OrderBookProps) => {
         case MessageType.unsubscribed:
           console.log(msg);
           break;
+        case MessageType.warning:
+        case MessageType.alert:
+          setError('something wrong');
+          break;
         case MessageType.snapshot:
           let snapshot = msg as DataMessage;
           dispatch({ type: OrderStateActionType.init, payload: snapshot });
@@ -78,7 +82,6 @@ export const OrderBook = (props: OrderBookProps) => {
           break;
         case MessageType.delta:
           let delta = msg as DataMessage;
-          //console.log(delta);
           dispatch({ type: OrderStateActionType.update, payload: delta });
           break;
       }
@@ -120,8 +123,8 @@ export const OrderBook = (props: OrderBookProps) => {
         <Card
           bg="dark"
           text="white"
-          style={{ width: '18rem' }}
-          className="mb-2 w-100"
+          style={{ height: 600 }}
+          className="mb-2 w-100 overflow-hidden"
         >
           <Card.Header className="d-flex flex-row justify-content-between">
             <div className="p-2">Order Book</div>
@@ -163,21 +166,7 @@ export const OrderBook = (props: OrderBookProps) => {
             >
               Toggle Feed
             </button>
-            <button
-              type="button"
-              className="btn btn-danger ml-1"
-              disabled={isLoading}
-              onClick={() => {
-                socket.send(
-                  getSubscriptionMessage(
-                    state.market,
-                    SubscribeAction.subscribe
-                  )
-                );
-              }}
-            >
-              Add Feed
-            </button>
+
             <button
               type="button"
               className="btn btn-danger ml-1"
