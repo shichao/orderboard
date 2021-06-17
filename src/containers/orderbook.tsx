@@ -30,6 +30,20 @@ export const OrderBook = (props: OrderBookProps) => {
   //effects
   React.useEffect(() => {
     //init
+    initSocket();
+  }, []);
+
+  React.useEffect(() => {
+    if (isSocketOpen) {
+      setIsLoading(true);
+      sendMessage(
+        getSubscriptionMessage(state.market, SubscribeAction.subscribe)
+      );
+    }
+  }, [isSocketOpen]);
+
+  //methods
+  const initSocket = () => {
     let socket = new WebSocket(feedUrl);
 
     socket.onopen = (event) => {
@@ -37,7 +51,6 @@ export const OrderBook = (props: OrderBookProps) => {
     };
     socket.onmessage = onMessageReceived;
     socket.onclose = (event) => {
-      //leave for further diagnostic use
       setIsSocketOpen(false);
     };
     socket.onerror = (event) => {
@@ -45,23 +58,7 @@ export const OrderBook = (props: OrderBookProps) => {
     };
 
     setSocket(socket);
-
-    //dispose
-    return () => {
-      console.log('dispose');
-    };
-  }, []);
-
-  React.useEffect(() => {
-    if (isSocketOpen) {
-      setIsLoading(true);
-      socket.send(
-        getSubscriptionMessage(state.market, SubscribeAction.subscribe)
-      );
-    }
-  }, [isSocketOpen]);
-
-  //methods
+  };
   const onMessageReceived = (event: MessageEvent<any>) => {
     let msg = parseMessage(event.data);
     if (msg) {
@@ -97,29 +94,42 @@ export const OrderBook = (props: OrderBookProps) => {
   const toggleFeed = () => {
     setIsLoading(true);
     if (socket && isSocketOpen) {
-      socket.send(
+      sendMessage(
         getSubscriptionMessage(state.market, SubscribeAction.unsubscribe)
       );
     }
     let newMarket = state.market === Market.xbt ? Market.eth : Market.xbt;
-    socket.send(getSubscriptionMessage(newMarket, SubscribeAction.subscribe));
+    sendMessage(getSubscriptionMessage(newMarket, SubscribeAction.subscribe));
   };
 
   const reboot = () => {
     setError(undefined);
     //some other logic to reset board
+    if (!isSocketOpen) {
+      initSocket();
+    }
   };
 
+  const sendMessage = (message: string) => {
+    try {
+      socket.send(message);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const showError = () => {
+    return error || !isSocketOpen;
+  };
   //render
   return (
     <>
-      {error !== undefined && (
+      {showError() && (
         <Alert variant="danger" onClose={reboot} dismissible>
-          <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
-          <p>{error}</p>
+          {!isSocketOpen && <p>Websocket is closed</p>}
         </Alert>
       )}
-      {error === undefined && (
+      {!showError() && (
         <div className="d-flex flex-column h-100">
           <Navbar bg={'dark'} variant="dark">
             <Navbar.Brand>Order Book</Navbar.Brand>
@@ -168,84 +178,13 @@ export const OrderBook = (props: OrderBookProps) => {
               className="btn btn-danger ml-1"
               disabled={isLoading}
               onClick={() => {
-                socket.send(
-                  getSubscriptionMessage(
-                    state.market,
-                    SubscribeAction.unsubscribe
-                  )
-                );
+                socket.close();
               }}
             >
               Kill Feed
             </button>
           </Navbar>
         </div>
-
-        /*
-        <Card
-          bg="dark"
-          text="white"
-          style={{ height: 600 }}
-          className="mb-2 w-100 overflow-hidden"
-        >
-          <Card.Header className="d-flex flex-row justify-content-between">
-            <div className="p-2">Order Book</div>
-            <div className="p-2">
-              <GroupOptions
-                value={state.group}
-                groups={getMarketGroupingOptions(state.market)}
-                onChange={groupChanged}
-                disabled={isLoading}
-              />
-            </div>
-          </Card.Header>
-          <Card.Body className="p-0">
-            <Row>
-              <Col className="p-0">
-                <OrderList
-                  alignment={AlignmentType.rightToLeft}
-                  orders={state.asks}
-                  group={state.group}
-                  color={Color.Red}
-                />
-              </Col>
-              <Col className="p-0">
-                <OrderList
-                  alignment={AlignmentType.leftToRight}
-                  orders={state.bids}
-                  group={state.group}
-                  color={Color.Green}
-                />
-              </Col>
-            </Row>
-          </Card.Body>
-          <Card.Footer className="d-flex justify-content-center mr-1">
-            <button
-              type="button"
-              className="btn btn-info"
-              onClick={toggleFeed}
-              disabled={isLoading}
-            >
-              Toggle Feed
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-danger ml-1"
-              disabled={isLoading}
-              onClick={() => {
-                socket.send(
-                  getSubscriptionMessage(
-                    state.market,
-                    SubscribeAction.unsubscribe
-                  )
-                );
-              }}
-            >
-              Kill Feed
-            </button>
-          </Card.Footer>
-        </Card>*/
       )}
     </>
   );
