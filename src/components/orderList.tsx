@@ -66,7 +66,7 @@ const getToLeftBgSize = (size: number, total: number) => {
 
 export const OrderList = (props: OrderListProps) => {
   const getHeader = () => {
-    return props.alignment === AlignmentType.leftToRight ? (
+    return props.alignment === AlignmentType.rightToLeft ? (
       <thead className="text-secondary">
         <tr>
           <th scope="col" className="text-right pr-5">
