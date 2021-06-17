@@ -10,7 +10,7 @@ import {
   DataMessage,
 } from '@src/services';
 import * as React from 'react';
-import { Alert, Card, Col, Row } from 'react-bootstrap';
+import { Alert, Card, Col, Nav, Navbar, Row } from 'react-bootstrap';
 import { OrderStateActionType, reducer } from './orderState';
 
 export type OrderBookProps = {
@@ -69,11 +69,12 @@ export const OrderBook = (props: OrderBookProps) => {
         case MessageType.info:
         case MessageType.subscribed:
         case MessageType.unsubscribed:
-          console.log(msg);
+          //console.log(msg);
           break;
         case MessageType.warning:
         case MessageType.alert:
           setError('something wrong');
+          console.log(msg);
           break;
         case MessageType.snapshot:
           let snapshot = msg as DataMessage;
@@ -120,6 +121,68 @@ export const OrderBook = (props: OrderBookProps) => {
         </Alert>
       )}
       {error === undefined && (
+        <div className="d-flex flex-column h-100">
+          <Navbar bg={'dark'} variant="dark">
+            <Navbar.Brand>Order Book</Navbar.Brand>
+            <Nav className="mr-auto" />
+            <Nav>
+              <GroupOptions
+                value={state.group}
+                groups={getMarketGroupingOptions(state.market)}
+                onChange={groupChanged}
+                disabled={isLoading}
+              />
+            </Nav>
+          </Navbar>
+          <div className="h-100 overflow-hidden bg-dark">
+            <Row className="h-100">
+              <Col className="p-0">
+                <OrderList
+                  alignment={AlignmentType.rightToLeft}
+                  orders={state.asks}
+                  group={state.group}
+                  color={Color.Red}
+                />
+              </Col>
+              <Col className="p-0">
+                <OrderList
+                  alignment={AlignmentType.leftToRight}
+                  orders={state.bids}
+                  group={state.group}
+                  color={Color.Green}
+                />
+              </Col>
+            </Row>
+          </div>
+          <Navbar bg={'dark'} variant="dark" className="justify-content-center">
+            <button
+              type="button"
+              className="btn btn-info"
+              onClick={toggleFeed}
+              disabled={isLoading}
+            >
+              Toggle Feed
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-danger ml-1"
+              disabled={isLoading}
+              onClick={() => {
+                socket.send(
+                  getSubscriptionMessage(
+                    state.market,
+                    SubscribeAction.unsubscribe
+                  )
+                );
+              }}
+            >
+              Kill Feed
+            </button>
+          </Navbar>
+        </div>
+
+        /*
         <Card
           bg="dark"
           text="white"
@@ -183,7 +246,7 @@ export const OrderBook = (props: OrderBookProps) => {
               Kill Feed
             </button>
           </Card.Footer>
-        </Card>
+        </Card>*/
       )}
     </>
   );
