@@ -5,11 +5,16 @@ export enum AlignmentType {
   leftToRight = 0,
   rightToLeft = 1,
 }
+export enum Color {
+  Red = 0,
+  Green = 1,
+}
 
 export type OrderListProps = {
   orders: OrderSet;
   alignment: AlignmentType;
   group: number;
+  color: Color;
 };
 
 //we have two decimal maximumly
@@ -50,6 +55,15 @@ export const groupOrders = (orderSet: OrderSet, group: number): Order[] => {
   return result;
 };
 
+const getToRightBgSize = (size: number, total: number) => {
+  let per = ((size / total) * 100).toFixed(2);
+  return `${per}% 100%`;
+};
+const getToLeftBgSize = (size: number, total: number) => {
+  let per = ((1 - size / total) * 100).toFixed(2);
+  return `${per}% 100%`;
+};
+
 export const OrderList = (props: OrderListProps) => {
   const getHeader = () => {
     return props.alignment === AlignmentType.leftToRight ? (
@@ -87,17 +101,50 @@ export const OrderList = (props: OrderListProps) => {
     let sum = 0;
     let rows = [];
     if (props.orders) {
+      //get total
+      let orders = groupOrders(props.orders, props.group);
+      let total = orders.reduce(
+        (p, c) => {
+          p.size += c.size;
+          return p;
+        },
+        { price: 0, size: 0 }
+      );
       return (
         <tbody>
-          {groupOrders(props.orders, props.group).map((order, idx) =>
+          {orders.map((order, idx, arr) =>
             props.alignment === AlignmentType.leftToRight ? (
-              <tr key={idx}>
+              <tr
+                key={idx}
+                className={
+                  props.color === Color.Red ? 'redBarToLeft' : 'greenBarToLeft'
+                }
+                style={{
+                  backgroundSize: getToRightBgSize(
+                    sum + order.size,
+                    total.size
+                  ),
+                }}
+              >
                 <td className="text-right pr-5">{(sum += order.size)}</td>
                 <td className="text-right pr-5">{order.size}</td>
                 <td className="text-right pr-5">{order.price.toFixed(2)}</td>
               </tr>
             ) : (
-              <tr key={idx}>
+              <tr
+                key={idx}
+                className={
+                  props.color === Color.Red
+                    ? 'redBarToRight'
+                    : 'greenBarToRight'
+                }
+                style={{
+                  backgroundSize: getToRightBgSize(
+                    sum + order.size,
+                    total.size
+                  ),
+                }}
+              >
                 <td className="text-left pl-5">{order.price.toFixed(2)}</td>
                 <td className="text-left pl-5">{order.size}</td>
                 <td className="text-left pl-5">{(sum += order.size)}</td>

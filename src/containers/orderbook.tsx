@@ -1,4 +1,4 @@
-import { AlignmentType, GroupOptions, OrderList } from '@src/components';
+import { AlignmentType, Color, GroupOptions, OrderList } from '@src/components';
 import {
   Market,
   getMarketGroupingOptions,
@@ -73,8 +73,8 @@ export const OrderBook = (props: OrderBookProps) => {
           setIsLoading(false);
           break;
         case MessageType.delta:
-          let delta = msg as DataMessage;
-          dispatch({ type: OrderStateActionType.update, payload: delta });
+          //let delta = msg as DataMessage;
+          //dispatch({ type: OrderStateActionType.update, payload: delta });
           break;
       }
     }
@@ -136,6 +136,7 @@ export const OrderBook = (props: OrderBookProps) => {
                   alignment={AlignmentType.leftToRight}
                   orders={state.asks}
                   group={state.group}
+                  color={Color.Red}
                 />
               </Col>
               <Col className="p-0">
@@ -143,6 +144,7 @@ export const OrderBook = (props: OrderBookProps) => {
                   alignment={AlignmentType.rightToLeft}
                   orders={state.bids}
                   group={state.group}
+                  color={Color.Green}
                 />
               </Col>
             </Row>
